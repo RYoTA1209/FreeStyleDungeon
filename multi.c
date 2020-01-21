@@ -24,7 +24,7 @@ int main(int argc,char *argv[])
         exit(1);
     }
 
-    if(sockfd=socket(PF_INET,SOCK_STREAM,0)<0){
+    if(sockfd==socket(PF_INET,SOCK_STREAM,0)<0){
         perror("socket file discriptor");
         exit(1);
     }
@@ -37,7 +37,7 @@ int main(int argc,char *argv[])
 
     sin_siz =sizeof(struct sockaddr_in);
 
-    if(bind(sockfd,(strugt sockaddr *)$serv,sizeof(serv))<0){
+    if(bind(sockfd,(struct sockaddr *)&serv,sizeof(serv))<0){
         perror("bind");
         exit(1);
     }
@@ -50,7 +50,7 @@ int main(int argc,char *argv[])
     printf("listen() called\n");
 
     while(1){
-
+        
         if((new_sockfd = accept(sockfd,(struct sockaddr *)&clnt,&sin_siz))<0){
             perror("accept");
         }
@@ -66,7 +66,7 @@ int main(int argc,char *argv[])
             printf("in child %d\n",getpid());
             close(sockfd);
 
-            memset(buf,0,BUFSIZE);
+            memset(buf,0,BUFSIZ);
             while(strncasecmp(buf,"exit\n",5)!=0){
                 len=recv(new_sockfd,buf,BUFSIZ,0);
                 buf[len]='\0';

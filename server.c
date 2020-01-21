@@ -13,7 +13,7 @@ int main(int argc ,char *argv[])
     struct sockaddr_in serv;
     int port;
     if(argc!=3){
-        printf("Usage:./prog hostport\n");
+        printf("Usage:./prog host port\n");
         exit(1);
     }
     if((sockefd=socket(PF_INET,SOCK_STREAM,0))<0){
