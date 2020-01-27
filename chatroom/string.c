@@ -11,7 +11,7 @@ void str_trim_lf (char* arr, int length) {
     }
 }
 
-void str_overwrite_stdout() {
-    printf("\r%s", "> ");
+void str_overwrite_stdout(char* name,char* id) {
+    printf("\b%s【ルーム：%s】%s", name,id,"> ");
     fflush(stdout);
 }

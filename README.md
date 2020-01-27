@@ -1,11 +1,10 @@
 # FreeStyleDungeon
-Free Style Dungeon C language application.
-dolylab server ip : 172.16.24.13
+Chatroom C language application.
 
-# chatプログラム　使い方
+# chatroomプログラム　使い方
 ## Build
 ```bash
-cd chat
+cd chatroom
 make
 ```
 

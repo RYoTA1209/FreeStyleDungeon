@@ -15,6 +15,8 @@ volatile sig_atomic_t flag = 0;
 int sockfd = 0;
 char *ip = "127.0.0.1";
 char nickname[LENGTH_NAME] = {};
+char roomId[LENGTH_ROOM] = {};
+char firstData[LENGTH_FIRSTDATA] = {};
 
 void sigint_handler(int sig){
     flag = 1;
@@ -27,8 +29,8 @@ void recv_msg_handler(){
         int receive = recv(sockfd, receiveMessage, LENGTH_SEND, 0);
         if (receive > 0)
         {
-            printf("\r%s\n",receiveMessage);
-            str_overwrite_stdout();
+            printf("\r%s             \n",receiveMessage);
+            str_overwrite_stdout(nickname,roomId);
         }else if (receive == 0)
         {
             break;
@@ -42,13 +44,13 @@ void send_msg_handler(){
     char message[LENGTH_MSG] = {};
     while (1)
     {
-        str_overwrite_stdout();
+        str_overwrite_stdout(nickname,roomId);
         while (fgets(message, LENGTH_MSG, stdin) != NULL)
         {
             str_trim_lf(message, LENGTH_MSG);
             if (strlen(message) == 0)
             {
-                str_overwrite_stdout();
+                str_overwrite_stdout(nickname,roomId);
             }else{
                 break;
             }
@@ -69,7 +71,7 @@ int main(int argc, char const *argv[])
     if(argc == 2){
         ip = argv[1];
     }
-
+    printSplash();
     printf("名前を入れてください：");
     if(fgets(nickname,LENGTH_NAME,stdin) != NULL){
         str_trim_lf(nickname, LENGTH_NAME);
@@ -79,6 +81,14 @@ int main(int argc, char const *argv[])
         printf("\n名前は2文字以上かつ30文字以内で入力してください\n");
         exit(EXIT_FAILURE);
     }
+
+    printf("ルームIDを入れてください：");
+    if(fgets(roomId,LENGTH_ROOM,stdin) != NULL){
+        str_trim_lf(roomId, LENGTH_ROOM);
+    }
+
+    sprintf(firstData,"%s,%s",nickname,roomId);
+
 
     //ソケットを作成
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -106,9 +116,11 @@ int main(int argc, char const *argv[])
     
     getsockname(sockfd, (struct sockaddr*)&clientAddr, (socklen_t*)&client_addrlen);
     getpeername(sockfd, (struct sockaddr*)&serverAddr, (socklen_t*)&server_addrlen);
-    printf("サーバーに接続しました:%s(%d)\n",inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
-    
-    send(sockfd, nickname, LENGTH_NAME, 0);
+    //printf("サーバーに接続しました:%s(%d)\n",inet_ntoa(serverAddr.sin_addr), ntohs(serverAddr.sin_port));
+    printf("サーバーに接続しました(%s)【ルーム：%s】\n", nickname, roomId);
+
+    // send(sockfd, nickname, LENGTH_NAME, 0);
+    send(sockfd, firstData, LENGTH_FIRSTDATA, 0);
 
     pthread_t send_msg_thread;
     if (pthread_create(&send_msg_thread, NULL, (void *)send_msg_handler, NULL) != 0)
